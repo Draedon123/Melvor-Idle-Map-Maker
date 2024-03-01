@@ -72,7 +72,7 @@ module.exports = [
     mode,
     devServer: {
       static: {
-        directory: path.join(__dirname, "dist"),
+        directory: path.join(__dirname, "build"),
       },
       port: 9000,
     },
@@ -81,7 +81,7 @@ module.exports = [
     },
     output: {
       filename: "[name].js",
-      path: path.resolve(__dirname, "dist"),
+      path: path.resolve(__dirname, "build"),
     },
     target: ["web"],
     resolve,
@@ -123,7 +123,7 @@ module.exports = [
     entry: "./src/basisWorker.ts",
     output: {
       filename: "basisWorker.js",
-      path: path.resolve(__dirname, "dist"),
+      path: path.resolve(__dirname, "build"),
     },
     target: ["webworker"],
     resolve,
