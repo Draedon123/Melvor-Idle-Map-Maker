@@ -76,6 +76,9 @@ export function initialiseMapBuilder(): void{
   const hexLayer = new Container<HexDisplay>();
   const backgroundLayer = new Container<Sprite>();
 
+  hexLayer.cullable = true;
+  backgroundLayer.cullable = true;
+
   backgroundLayer.zIndex = 5;
   hexLayer.zIndex = 10;
 
@@ -88,7 +91,10 @@ export function initialiseMapBuilder(): void{
   viewport.drag().decelerate({minSpeed: 0.3, friction: 0.96}).pinch().wheel({percent: 10});
   app.stage.addChild(viewport);
   
-  let backgroundSprite: Sprite;
+  const mapDimensions = {
+    width: 0,
+    height: 0,
+  }
   const WORKER_COUNT = 2;
   
   mapInput.addEventListener("change", async() => {
@@ -137,33 +143,34 @@ export function initialiseMapBuilder(): void{
     for(const child of viewport.children) (child as Container).removeChildren().forEach(child => child.destroy());
     
     await transcodeBasisFiles(toBeTranscoded, WORKER_COUNT);
-    
-    const textureCanvas = document.createElement("canvas");
-    const ctx = textureCanvas.getContext("2d");
-    if(ctx === null) return error("HTML5 2D canvas not supported");
 
-    textureCanvas.width = tiles.tileWidth * tilesX;
-    textureCanvas.height = tiles.tileHeight * tilesY;
-  
-    for(const tile of tiles.tiles) ctx.drawImage(tile.texture, tile.x * tiles.tileWidth, tile.y * tiles.tileHeight);
-  
-    const texture = Texture.from(textureCanvas);
+    mapDimensions.width = tiles.tileWidth * tilesX;
+    mapDimensions.height = tiles.tileHeight * tilesY;
+
     const devicePixelRatio = Math.max(window.devicePixelRatio || 1, 2);
+    const scaleFactor = Math.min((canvas.width / devicePixelRatio) / mapDimensions.width, (canvas.height / devicePixelRatio) / mapDimensions.height);
+
+    for(const tile of tiles.tiles){
+      const sprite = new Sprite(Texture.from(tile.texture));
+
+      sprite.x = tile.x * tiles.tileWidth * scaleFactor;
+      sprite.y = tile.y * tiles.tileHeight * scaleFactor;
+
+      sprite.width *= scaleFactor;
+      sprite.height *= scaleFactor;
+
+      sprite.cullable = true;
+
+      backgroundLayer.addChild(sprite);
+    }
+
     const longestSide = Math.max(canvas.width, canvas.height) / devicePixelRatio;
-    const scaleFactor = Math.min((canvas.width / devicePixelRatio) / texture.width, (canvas.height / devicePixelRatio) / texture.height);
-    
-    backgroundSprite = new Sprite(texture);
-    
-    backgroundSprite.setTransform(0, 0);
 
-    backgroundSprite.width = texture.width * scaleFactor;
-    backgroundSprite.height = texture.height * scaleFactor;
+    backgroundLayer.width = mapDimensions.width;
+    backgroundLayer.height = mapDimensions.height;
 
-    backgroundLayer.width = backgroundSprite.width;
-    backgroundLayer.height = backgroundSprite.height;
-
-    hexLayer.width = backgroundSprite.width;
-    hexLayer.height = backgroundSprite.height;
+    hexLayer.width = mapDimensions.width;
+    hexLayer.height = mapDimensions.height;
 
     backgroundLayer.setTransform(0, 0);
     hexLayer.setTransform(0, 0);
@@ -171,7 +178,6 @@ export function initialiseMapBuilder(): void{
     viewport.worldWidth = longestSide;
     viewport.worldHeight = longestSide;
 
-    backgroundLayer.addChild(backgroundSprite);
     viewport.addChild(backgroundLayer, hexLayer);
     viewport.setTransform((canvas.width / devicePixelRatio - viewport.width) / 2, (canvas.height / devicePixelRatio - viewport.height) / 2, 1, 1);
 
@@ -273,7 +279,7 @@ export function initialiseMapBuilder(): void{
   }
 
   function updateHexLayer(): void{
-    if(!backgroundSprite) return;
+    if(backgroundLayer.children.length === 0) return;
 
     const hexesX = parseInt(document.getElementById("mapBuilderHexCountX").value);
     const hexesY = parseInt(document.getElementById("mapBuilderHexCountY").value);
@@ -282,7 +288,7 @@ export function initialiseMapBuilder(): void{
 
     hexLayer.removeChildren().forEach(child => child.destroy());
 
-    const hexScale = getHexScale({x: hexesX, y: hexesY}, {x: backgroundSprite.texture.width, y: backgroundSprite.texture.height});
+    const hexScale = getHexScale({x: hexesX, y: hexesY}, {x: mapDimensions.width, y: mapDimensions.height});
     const hexVertices = getHexVertices(hexScale);
     const origin = {
       x: hexScale.x,
@@ -291,7 +297,7 @@ export function initialiseMapBuilder(): void{
 
     const graphics = new Graphics();
     graphics.lineStyle({
-      width: Math.max(backgroundSprite.texture.width, backgroundSprite.texture.height) / 5000,
+      width: Math.max(mapDimensions.width, mapDimensions.height) / 5000,
       color: 0xffffff,
       alpha: 1,
       alignment: 0,
