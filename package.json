@@ -8,7 +8,8 @@
     "build": "webpack",
     "clean": "node cleanDist.js",
     "cleanBuild": "node cleanDist.js && webpack",
-    "start": "webpack server"
+    "start": "webpack server",
+    "deploy": "git subtree push --prefix build origin gh-pages"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^11.0.0",
