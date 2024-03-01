@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base href="/" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Map Maker</title>
+  <style id="simplebar-css">
+    /* simplebar.css */
+    [data-simplebar] {
+    position: relative;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+    align-items: flex-start;
+  }
+
+  .simplebar-wrapper {
+    overflow: hidden;
+    width: inherit;
+    height: inherit;
+    max-width: inherit;
+    max-height: inherit;
+  }
+
+  .simplebar-mask {
+    direction: inherit;
+    position: absolute;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: auto !important;
+    height: auto !important;
+    z-index: 0;
+  }
+
+  .simplebar-offset {
+    direction: inherit !important;
+    box-sizing: inherit !important;
+    resize: none !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .simplebar-content-wrapper {
+    direction: inherit;
+    box-sizing: border-box !important;
+    position: relative;
+    display: block;
+    height: 100%; /* Required for horizontal native scrollbar to not appear if parent is taller than natural height */
+    width: auto;
+    max-width: 100%; /* Not required for horizontal scroll to trigger */
+    max-height: 100%; /* Needed for vertical scroll to trigger */
+    overflow: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .simplebar-content-wrapper::-webkit-scrollbar,
+  .simplebar-hide-scrollbar::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .simplebar-content:before,
+  .simplebar-content:after {
+    content: ' ';
+    display: table;
+  }
+
+  .simplebar-placeholder {
+    max-height: 100%;
+    max-width: 100%;
+    width: 100%;
+    pointer-events: none;
+  }
+
+  .simplebar-height-auto-observer-wrapper {
+    box-sizing: inherit !important;
+    height: 100%;
+    width: 100%;
+    max-width: 1px;
+    position: relative;
+    float: left;
+    max-height: 1px;
+    overflow: hidden;
+    z-index: -1;
+    padding: 0;
+    margin: 0;
+    pointer-events: none;
+    flex-grow: inherit;
+    flex-shrink: 0;
+    flex-basis: 0;
+  }
+
+  .simplebar-height-auto-observer {
+    box-sizing: inherit;
+    display: block;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 1000%;
+    width: 1000%;
+    min-height: 1px;
+    min-width: 1px;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .simplebar-track {
+    z-index: 1;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  [data-simplebar].simplebar-dragging {
+    pointer-events: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  [data-simplebar].simplebar-dragging .simplebar-content {
+    pointer-events: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  [data-simplebar].simplebar-dragging .simplebar-track {
+    pointer-events: all;
+  }
+
+  .simplebar-scrollbar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    min-height: 10px;
+  }
+
+  .simplebar-scrollbar:before {
+    position: absolute;
+    content: '';
+    background: black;
+    border-radius: 7px;
+    left: 2px;
+    right: 2px;
+    opacity: 0;
+    transition: opacity 0.2s 0.5s linear;
+  }
+
+  .simplebar-scrollbar.simplebar-visible:before {
+    opacity: 0.5;
+    transition-delay: 0s;
+    transition-duration: 0s;
+  }
+
+  .simplebar-track.simplebar-vertical {
+    top: 0;
+    width: 11px;
+  }
+
+  .simplebar-scrollbar:before {
+    top: 2px;
+    bottom: 2px;
+    left: 2px;
+    right: 2px;
+  }
+
+  .simplebar-track.simplebar-horizontal {
+    left: 0;
+    height: 11px;
+  }
+
+  .simplebar-track.simplebar-horizontal .simplebar-scrollbar {
+    right: auto;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    min-height: 0;
+    min-width: 10px;
+    width: auto;
+  }
+
+  /* Rtl support */
+  [data-simplebar-direction='rtl'] .simplebar-track.simplebar-vertical {
+    right: auto;
+    left: 0;
+  }
+
+  .simplebar-dummy-scrollbar-size {
+    direction: rtl;
+    position: fixed;
+    opacity: 0;
+    visibility: hidden;
+    height: 500px;
+    width: 500px;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    -ms-overflow-style: scrollbar !important;
+  }
+
+  .simplebar-dummy-scrollbar-size > div {
+    width: 200%;
+    height: 200%;
+    margin: 10px 0;
+  }
+
+  .simplebar-hide-scrollbar {
+    position: fixed;
+    left: 0;
+    visibility: hidden;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  </style>
+</head>
+<body>
+  <div id="navigationBar"></div>
+  <div id="mainContainer">
+    <div id="fileGenerator">
+      <div id="fileGeneratorMain">
+        <label for="fileGeneratorMapInput">
+          Upload Map Image
+        </label>
+        <br>
+        <input type="file" name="fileGeneratorMapInput" id="fileGeneratorMapInput" accept="image/*"/>
+      
+        <br><br>
+      
+        <label for="fileGeneratorTileWidthInput">
+          Tile Width:
+        </label>
+        <br>
+        <input type="number" name="fileGeneratorTileWidthInput" id="fileGeneratorTileWidthInput" min="1" max="2000" value="1000" />
+        
+        <br><br>
+      
+        <label for="fileGeneratorTileHeightInput">
+          Tile Height:
+        </label>
+        <br>
+        <input type="number" name="fileGeneratorTileHeightInput" id="fileGeneratorTileHeightInput" min="1" max="2000" value="1000" />
+        
+        <br><br>
+
+        <label for="fileGeneratorThreadsInput">
+          Number of Threads:
+        </label>
+        <br>
+        <input type="number" name="fileGeneratorThreadsInput" id="fileGeneratorThreadsInput" min="1" value="2" />
+
+        <br><br>
+      
+        <button id="fileGeneratorSubmit">Create Files</button>
+        <br><br>
+        <button id="fileGeneratorDownload" disabled>Download Zip File</button>
+      </div>
+    </div>
+
+    <div id="mapBuilder">
+      <div id="mapBuilderToolbar">
+        <div id="mapBuilderToolbarGeneral">
+          <img src="./assets/settings.png" />
+        </div>
+        <div id="mapBuilderToolbarMetaData">
+          <img src="./favicon.ico" />
+        </div>
+        <div id="mapBuilderToolbarFilters">
+          <img src="./assets/filter.png" />
+        </div>
+      </div>
+      <div id="mapBuilderCanvasContainer">
+        <canvas id="mapBuilderCanvas"></canvas>
+        <div id="mapBuilderCanvasLoading">
+          <div id="mapBuilderCanvasLoadingText">
+            Loading..
+          </div>
+          <div id="mapBuilderCanvasProgressBar">
+            <div id="mapBuilderCanvasProgressBarFill"></div>
+          </div>
+        </div>
+      </div>
+      <div id="mapBuilderToolbarGeneralForm">
+        <label for="mapBuilderMapInput">
+          Upload Map Images
+          <br>
+          <span style="font-size: smaller;">
+            All .basis files must be named tile_{x}_{y}@{resolution}x.basis
+            <br>
+            ie, tile_0_0@0.5x.basis
+          </span>
+        </label>
+        <br>
+        <input type="file" name="mapBuilderMapInput" id="mapBuilderMapInput" accept=".basis" multiple>
+        <br>
+        <span id="mapBuilderMapInputError"></span>
+      </div>
+      <div id="mapBuilderToolbarMetaDataForm">
+        <h5 style="margin: 0;">
+          These are for the full size dimensions
+          <br>
+          Do these settings first!!!
+        </h5>
+        <br>
+        <label for="mapBuilderHexCountX" id="mapBuilderHexCountXLabel">
+          Hex Count X
+        </label>
+        <br>
+        <input type="number" name="mapBuilderHexCountX" id="mapBuilderHexCountX" min="1" />
+
+        <br><br>
+
+        <label for="mapBuilderHexCountY" id="mapBuilderHexCountYLabel">
+          Hex Count Y
+        </label>
+        <br>
+        <input type="number" name="mapBuilderHexCountY" id="mapBuilderHexCountY" min="1" />
+
+        <br><br><hr>
+      </div>
+      <div id="mapBuilderToolbarFiltersForm">
+        <div>
+          <div>
+            <input id="mapBuilderToolbarFiltersFormHexGrid" type="checkbox" />
+          </div>
+          <div>
+            <img src="./assets/hex_grid.png" />
+            <div>Show Hex Grid</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="version">Version 0.0.1</div>
+</body>
+</html>

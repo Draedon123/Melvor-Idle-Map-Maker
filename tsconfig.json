@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "lib": ["DOM", "ES2017", "DOM.Iterable"],
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "allowJs": false,
+    "noImplicitAny": true,
+    "removeComments": true,
+    "module": "CommonJS",
+    "downlevelIteration": true,
+  },
+  "include": [
+    "src/**/*",
+  ]
+}
