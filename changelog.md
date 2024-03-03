@@ -1,3 +1,6 @@
+# Version 0.1.1
+- Updated build and github pages deployment
+
 # Version 0.1.0
 - Added help page
 - Increased navigation bar interactivity

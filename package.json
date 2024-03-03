@@ -2,7 +2,7 @@
   "name": "melvor-idle-map-maker",
   "description": "A friendly way to create custom maps for the Cartography Skill in Melvor Idle",
   "author": "Draedon",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "index.html",
   "scripts": {
     "build": "webpack",
