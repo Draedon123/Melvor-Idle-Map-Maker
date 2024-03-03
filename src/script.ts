@@ -3,28 +3,30 @@ import Moveable from "moveable";
 import SimpleBar from "simplebar";
 import { initialiseFileGenerator } from "./fileGenerator";
 import { initialiseMapBuilder } from "./mapBuilder";
+import { initaliseHelpPage } from "./help";
 
 (() => {
 const defaultPage = "File Generator";
 const initalisationStatus = {
   "File Generator": false,
   "Map Builder": false,
+  "Help": false,
 }
 
 window.pages = {
   "File Generator": document.getElementById("fileGenerator"),
   "Map Builder": document.getElementById("mapBuilder"),
+  "Help": document.getElementById("help"),
   async switchPage(pageName){
     let hasSwitchedPage = false;
     for(const key of Object.keys(window.pages)){
-      // @ts-ignore
-      const page: HTMLDivElement = pages[key];
+      const page = window.pages[key as keyof typeof window.pages];
       
-      if(page === undefined || typeof page === "function") return;
+      if(page === undefined || typeof page === "function" || Array.isArray(page)) return;
 
       if(key === pageName){
         page.classList.remove(styles.hidden);
-        localStorage.setItem("s", key);
+        localStorage.setItem("startingPage", key);
         hasSwitchedPage = true;
 
         switch(pageName){
@@ -41,6 +43,12 @@ window.pages = {
               initialiseMapBuilder();
               initialiseToolbar();
               break;
+            }
+          }
+          case "Help": {
+            if(initalisationStatus["Help"] === false){
+              initalisationStatus["Help"] = true;
+              initaliseHelpPage();
             }
           }
         }
@@ -60,57 +68,15 @@ window.pages = {
 }
 
 function init(): void{
-  document.getElementById("mainContainer").classList.add(styles.mainContainer);
-  const localStorageStartingPage = localStorage.getItem("s");
+  const localStorageStartingPage = localStorage.getItem("startingPage");
   const startingPage = localStorageStartingPage === null ? defaultPage : localStorageStartingPage;
 
-  const navigationBar = document.getElementById("navigationBar");
-  navigationBar.classList.add(styles.navigationBar);
-
-  for(const key of Object.keys(window.pages)){
-    // @ts-ignore
-    const value = pages[key];
-    if(typeof value === "function") break;
-    value.classList.add(styles.container);
-
-    const navigationBarItem = document.createElement("div");
-    navigationBarItem.classList.add(styles.navigationBarItem);
-    const anchor = document.createElement("a");
-    anchor.textContent = key;
-    anchor.onclick = () => window.pages.switchPage(key);
-    navigationBarItem.append(anchor);
-    navigationBar.append(navigationBarItem);
-  }
-
-  window.pages["Map Builder"].classList.add(styles.mapBuilder);
-
-  const fileGenerator = document.getElementById("fileGenerator");
-  const fileGeneratorMain = document.getElementById("fileGeneratorMain");
-  const mapBuilderMapInputError = document.getElementById("mapBuilderMapInputError");
-  const mapBuilderToolbar = document.getElementById("mapBuilderToolbar");
-  const mapBuilderCanvasLoading = document.getElementById("mapBuilderCanvasLoading");
-  const mapBuilderCanvasLoadingText = document.getElementById("mapBuilderCanvasLoadingText");
-  const mapBuilderCanvasProgressBar = document.getElementById("mapBuilderCanvasProgressBar");
-  const mapBuilderCanvasProgressBarFill = document.getElementById("mapBuilderCanvasProgressBarFill");
-  const mapBuilderCanvasContainer = document.getElementById("mapBuilderCanvasContainer");
-  const mapBuilderToolbarFiltersForm = document.getElementById("mapBuilderToolbarFiltersForm");
-  const version = document.getElementById("version");
-
-  fileGenerator.classList.add(styles.fileGenerator);
-  fileGeneratorMain.classList.add(styles.fileGeneratorMain);
-  mapBuilderMapInputError.classList.add(styles.error);
-  mapBuilderToolbar.classList.add(styles.toolbar);
-  mapBuilderCanvasLoading.classList.add(styles.mapBuilderCanvasLoading, styles.hidden);
-  mapBuilderCanvasLoadingText.classList.add(styles.mapBuilderCanvasLoadingText);
-  mapBuilderCanvasProgressBar.classList.add(styles.mapBuilderCanvasProgressBar);
-  mapBuilderCanvasProgressBarFill.classList.add(styles.mapBuilderCanvasProgressBarFill);
-  mapBuilderCanvasContainer.classList.add(styles.mapBuilderCanvasContainer);
-  mapBuilderToolbarFiltersForm.classList.add(styles.mapBuilderToolbarFiltersForm);
-  version.classList.add(styles.version);
-
-  addTooltip("mapBuilderHexCountXLabel", "The number of hexes the map has horizontally", "up");
-  addTooltip("mapBuilderHexCountYLabel", "The number of hexes the map has vertically", "up");
-
+  initialiseNavigationBar();
+  attachStyles();
+  addAllTooltips();
+  
+  document.body.style.display = "";
+  
   window.pages.switchPage(startingPage);
 }
 
@@ -212,6 +178,77 @@ function initialiseToolbar(): void{
 
     toolbarElements[child.id] = formElement;
   }
+}
+
+function initialiseNavigationBar(): void{
+  const navigationBar = document.getElementById("navigationBar");
+  navigationBar.classList.add(styles.navigationBar);
+
+  for(const key of Object.keys(window.pages)){
+    const value = window.pages[key as keyof typeof window.pages];
+    if(typeof value === "function" || Array.isArray(value)) break;
+    value.classList.add(styles.container);
+
+    const navigationBarItem = document.createElement("div");
+    navigationBarItem.classList.add(styles.navigationBarItem);
+    const anchor = document.createElement("a");
+    anchor.textContent = key;
+    anchor.onclick = () => window.pages.switchPage(key);
+    navigationBarItem.append(anchor);
+    navigationBar.append(navigationBarItem);
+
+    const page = window.pages[key as Page];
+    if(typeof page === "function" || Array.isArray(page)) continue;
+
+    window.pages.addEventListener(key as Page, "switchTo", () => navigationBarItem.classList.add(styles.activeNavigationBarItem));
+    window.pages.addEventListener(key as Page, "switchFrom", () => navigationBarItem.classList.remove(styles.activeNavigationBarItem));
+  }
+}
+
+function attachStyles(): void{
+  const idEqualsStyle: string[] = [
+    "mainContainer",
+
+    "fileGenerator",
+    "fileGeneratorMain",
+
+    "mapBuilder",
+    "mapBuilderCanvasLoading",
+    "mapBuilderCanvasLoadingText",
+    "mapBuilderCanvasProgressBar",
+    "mapBuilderCanvasProgressBarFill",
+    "mapBuilderCanvasContainer",
+    "mapBuilderToolbarFiltersForm",
+
+    "help",
+    "helpContainer",
+    "version"
+  ]
+
+  for(const id of idEqualsStyle){
+    const element = document.getElementById(id);
+    if(element === null) throw new Error(`Element with id ${id} does not exist`);
+
+    const style = styles[id];
+    if(style === undefined) throw new Error(`Style with class name ${id} does not exist`);
+
+    element.classList.add(style);
+  }
+
+  const mapBuilderMapInputError = document.getElementById("mapBuilderMapInputError");
+  const mapBuilderToolbar = document.getElementById("mapBuilderToolbar");
+  const mapBuilderCanvasLoading = document.getElementById("mapBuilderCanvasLoading");
+  const helpContainerFileGenerationHeader = document.getElementById("helpContainerFileGenerationHeader");
+
+  mapBuilderMapInputError.classList.add(styles.error);
+  mapBuilderToolbar.classList.add(styles.toolbar);
+  mapBuilderCanvasLoading.classList.add(styles.hidden);
+  helpContainerFileGenerationHeader.classList.add(styles.helpContainerHeader);
+}
+
+function addAllTooltips(): void{
+  addTooltip("mapBuilderHexCountXLabel", "The number of hexes the map has horizontally", "up");
+  addTooltip("mapBuilderHexCountYLabel", "The number of hexes the map has vertically", "up");
 }
 
 init();

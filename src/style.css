@@ -1,8 +1,5 @@
 body{
   margin: 0;
-}
-
-body, html{
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -15,7 +12,7 @@ body, html{
   display: none;
 }
 
-*:not(.logger):not(.logger *):not(.mapBuilderForm):not(.mapBuilderForm *):not(.toolbar):not(.toolbar *){
+*:not(.logger):not(.logger *):not(.mapBuilderForm):not(.mapBuilderForm *):not(.toolbar):not(.toolbar *):not(ol):not(li):not(.help):not(.help *){
   overflow: hidden !important;
 }
 
@@ -54,7 +51,7 @@ body, html{
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  background-color: rgb(254, 170, 106);
+  background-color: #feaa6a;
 }
 
 .navigationBarItem{
@@ -71,6 +68,14 @@ body, html{
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+.activeNavigationBarItem{
+  background-color: #de8a4a;
+}
+
+.navigationBarItem:hover:not(.activeNavigationBarItem){
+  background-color: #ee9a5a;
 }
 
 .navigationBar > *:first-child{
@@ -106,7 +111,6 @@ a{
   position: absolute;
   height: 100%;
   width: 100%;
-  overflow: scroll;
 }
 
 canvas{
@@ -275,4 +279,64 @@ label{
   background-color: gray;
   color: white;
   padding: 2px;
+}
+
+.help{
+  overflow-y: scroll hidden;
+}
+
+.helpContainer{
+  padding: 0;
+  border-radius: 5px;
+  border: 1px solid black;
+  width: 98vw;
+  margin-bottom: 10vh;
+}
+
+.helpContainerHeader{
+  width: 100%;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid black;
+  border-top: 1px solid black;
+}
+
+.helpContainerHeaderIconContainer{
+  height: 100%;
+  aspect-ratio: 1;
+  border-right: 1px solid black;
+  cursor: pointer;
+  display: block;
+}
+
+.helpContainerHeaderIcon{
+  width: 100%;
+  height: 100%;
+}
+
+.helpContainerHeaderText{
+  padding-left: 2px;
+  width: 100%;
+  display: block;
+}
+
+.helpContainerContent{
+  margin-left: calc(2rem + 2px);
+  overflow-wrap: break-word;
+}
+
+.helpContainerContent ol{
+  padding-left: 0;
+  list-style-position: inside;
+}
+
+.helpContainerContent ol li{
+  font-size: larger;
+  font-weight: 700;
+}
+
+.helpContainerContent ol li *{
+  font-size: medium;
+  font-weight: 400;
 }

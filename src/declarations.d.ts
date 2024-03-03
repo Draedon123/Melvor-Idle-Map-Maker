@@ -5,19 +5,23 @@ declare module "*.css"{
   export default styles;
 }
 
+type Page = "File Generator" | "Map Builder" | "Help";
+
 interface Window{
   pages: {
-    "File Generator": HTMLElement,
-    "Map Builder": HTMLElement,
+    "File Generator": HTMLDivElement,
+    "Map Builder": HTMLDivElement,
+    "Help": HTMLDivElement,
     switchPage: (pageName: string) => void,
-    addEventListener: (page: "File Generator" | "Map Builder", on: "switchTo" | "switchFrom", callback: () => void) => void,
-    eventListeners: {page: "File Generator" | "Map Builder", on: "switchTo" | "switchFrom", callback: () => void}[],
+    addEventListener: (page: Page, on: "switchTo" | "switchFrom", callback: () => void) => void,
+    eventListeners: {page: Page, on: "switchTo" | "switchFrom", callback: () => void}[],
   }
 }
 
 interface Document{
   getElementById(elementID: "mainContainer"): HTMLDivElement,
   getElementById(elementID: "navigationBar"): HTMLDivElement,
+
   getElementById(elementID: "fileGenerator"): HTMLDivElement,
   getElementById(elementID: "fileGeneratorMain"): HTMLDivElement,
   getElementById(elementID: "fileGeneratorMapInput"): HTMLInputElement,
@@ -26,6 +30,7 @@ interface Document{
   getElementById(elementID: "fileGeneratorThreadsInput"): HTMLInputElement,
   getElementById(elementID: "fileGeneratorSubmit"): HTMLButtonElement,
   getElementById(elementID: "fileGeneratorDownload"): HTMLButtonElement,
+
   getElementById(elementID: "mapBuilder"): HTMLDivElement,
   getElementById(elementID: "mapBuilderCanvasContainer"): HTMLDivElement,
   getElementById(elementID: "mapBuilderCanvas"): HTMLCanvasElement,
@@ -47,6 +52,16 @@ interface Document{
   getElementById(elementID: "mapBuilderHexCountXLabel"): HTMLLabelElement,
   getElementById(elementID: "mapBuilderHexCountYLabel"): HTMLLabelElement,
   getElementById(elementID: "mapBuilderMapInputError"): HTMLSpanElement,
+
+  getElementById(elementID: "help"): HTMLDivElement,
+  getElementById(elementID: "helpContainer"): HTMLDivElement,
+  getElementById(elementID: "helpContainerFileGeneration"): HTMLDivElement,
+  getElementById(elementID: "helpContainerFileGenerationHeader"): HTMLDivElement,
+  getElementById(elementID: "helpContainerFileGenerationContent"): HTMLDivElement,
+  getElementById(elementID: "helpContainerMapBuilder"): HTMLDivElement,
+  getElementById(elementID: "helpContainerMapBuilderHeader"): HTMLDivElement,
+  getElementById(elementID: "helpContainerMapBuilderContent"): HTMLDivElement,
+
   getElementById(elementID: "version"): HTMLDivElement,
 }
 
