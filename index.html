@@ -1,4 +1,12 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"/><link rel="shortcut icon" type="image/x-icon" href="./favicon.ico"><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Map Maker</title><style id="simplebar-css">/* simplebar.css */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Map Maker</title>
+  <style id="simplebar-css">
+    /* simplebar.css */
     [data-simplebar] {
     position: relative;
     flex-direction: column;
@@ -228,4 +236,290 @@
     overflow-y: scroll;
     scrollbar-width: none;
     -ms-overflow-style: none;
-  }</style><script defer="defer" src="script.js"></script></head><body><div id="navigationBar"></div><div id="mainContainer"><div id="fileGenerator"><div id="fileGeneratorMain"><label for="fileGeneratorMapInput">Upload Map Image</label><br><input type="file" name="fileGeneratorMapInput" id="fileGeneratorMapInput" accept="image/*"/><br><br><label for="fileGeneratorTileWidthInput">Tile Width:</label><br><input type="number" name="fileGeneratorTileWidthInput" id="fileGeneratorTileWidthInput" min="1" max="2000" value="1000"/><br><br><label for="fileGeneratorTileHeightInput">Tile Height:</label><br><input type="number" name="fileGeneratorTileHeightInput" id="fileGeneratorTileHeightInput" min="1" max="2000" value="1000"/><br><br><label for="fileGeneratorThreadsInput">Number of Threads:</label><br><input type="number" name="fileGeneratorThreadsInput" id="fileGeneratorThreadsInput" min="1" value="2"/><br><br><button id="fileGeneratorSubmit">Create Files</button><br><br><button id="fileGeneratorDownload" disabled="disabled">Download Zip File</button></div></div><div id="mapBuilder"><div id="mapBuilderToolbar"><div id="mapBuilderToolbarGeneral"><img src="./assets/settings.png"/></div><div id="mapBuilderToolbarMetaData"><img src="./favicon.ico"/></div><div id="mapBuilderToolbarFilters"><img src="./assets/filter.png"/></div></div><div id="mapBuilderCanvasContainer"><canvas id="mapBuilderCanvas"></canvas><div id="mapBuilderCanvasLoading"><div id="mapBuilderCanvasLoadingText">Loading..</div><div id="mapBuilderCanvasProgressBar"><div id="mapBuilderCanvasProgressBarFill"></div></div></div></div><div id="mapBuilderToolbarGeneralForm"><label for="mapBuilderMapInput">Upload Map Images<br><span style="font-size: smaller;">All .basis files must be named tile_{x}_{y}@{resolution}x.basis<br>ie, tile_0_0@0.5x.basis</span></label><br><input type="file" name="mapBuilderMapInput" id="mapBuilderMapInput" accept=".basis" multiple="multiple"><br><span id="mapBuilderMapInputError"></span></div><div id="mapBuilderToolbarMetaDataForm"><h5 style="margin: 0;">These are for the full size dimensions<br>Do these settings first!!!</h5><br><label for="mapBuilderHexCountX" id="mapBuilderHexCountXLabel">Hex Count X</label><br><input type="number" name="mapBuilderHexCountX" id="mapBuilderHexCountX" min="1"/><br><br><label for="mapBuilderHexCountY" id="mapBuilderHexCountYLabel">Hex Count Y</label><br><input type="number" name="mapBuilderHexCountY" id="mapBuilderHexCountY" min="1"/><br><br><hr></div><div id="mapBuilderToolbarFiltersForm"><div><div><input id="mapBuilderToolbarFiltersFormHexGrid" type="checkbox"/></div><div><img src="./assets/hex_grid.png"/><div>Show Hex Grid</div></div></div></div></div></div><div id="version">Version 0.0.1</div></body></html>
+  }
+
+  </style>
+<script defer src="script.js"></script></head>
+<body style="display: none">
+  <div id="navigationBar"></div>
+  <div id="mainContainer">
+    <div id="fileGenerator">
+      <div id="fileGeneratorMain">
+        <label for="fileGeneratorMapInput">
+          Upload Map Image
+        </label>
+        <br>
+        <input type="file" name="fileGeneratorMapInput" id="fileGeneratorMapInput" accept="image/*"/>
+      
+        <br><br>
+      
+        <label for="fileGeneratorTileWidthInput">
+          Tile Width:
+        </label>
+        <br>
+        <input type="number" name="fileGeneratorTileWidthInput" id="fileGeneratorTileWidthInput" min="1" max="2000" value="1000" />
+        
+        <br><br>
+      
+        <label for="fileGeneratorTileHeightInput">
+          Tile Height:
+        </label>
+        <br>
+        <input type="number" name="fileGeneratorTileHeightInput" id="fileGeneratorTileHeightInput" min="1" max="2000" value="1000" />
+        
+        <br><br>
+
+        <label for="fileGeneratorThreadsInput">
+          Number of Threads:
+        </label>
+        <br>
+        <input type="number" name="fileGeneratorThreadsInput" id="fileGeneratorThreadsInput" min="1" value="2" />
+
+        <br><br>
+      
+        <button id="fileGeneratorSubmit">Create Files</button>
+        <br><br>
+        <button id="fileGeneratorDownload" disabled>Download Zip File</button>
+      </div>
+    </div>
+
+    <div id="mapBuilder">
+      <div id="mapBuilderToolbar">
+        <div id="mapBuilderToolbarGeneral">
+          <img src="./assets/settings.png" />
+        </div>
+        <div id="mapBuilderToolbarMetaData">
+          <img src="./favicon.ico" />
+        </div>
+        <div id="mapBuilderToolbarFilters">
+          <img src="./assets/filter.png" />
+        </div>
+      </div>
+      <div id="mapBuilderCanvasContainer">
+        <canvas id="mapBuilderCanvas"></canvas>
+        <div id="mapBuilderCanvasLoading">
+          <div id="mapBuilderCanvasLoadingText">
+            Loading..
+          </div>
+          <div id="mapBuilderCanvasProgressBar">
+            <div id="mapBuilderCanvasProgressBarFill"></div>
+          </div>
+        </div>
+      </div>
+      <div id="mapBuilderToolbarGeneralForm">
+        <label for="mapBuilderMapInput">
+          Upload Map Images
+          <br>
+          <span style="font-size: smaller;">
+            All .basis files must be named tile_{x}_{y}@{resolution}x.basis
+            <br>
+            ie, tile_0_0@0.5x.basis
+          </span>
+        </label>
+        <br>
+        <input type="file" name="mapBuilderMapInput" id="mapBuilderMapInput" accept=".basis" multiple>
+        <br>
+        <span id="mapBuilderMapInputError"></span>
+      </div>
+      <div id="mapBuilderToolbarMetaDataForm">
+        <h5 style="margin: 0;">
+          These are for the full size dimensions
+          <br>
+          Do these settings first!!!
+        </h5>
+        <br>
+        <label for="mapBuilderHexCountX" id="mapBuilderHexCountXLabel">
+          Hex Count X
+        </label>
+        <br>
+        <input type="number" name="mapBuilderHexCountX" id="mapBuilderHexCountX" min="1" />
+
+        <br><br>
+
+        <label for="mapBuilderHexCountY" id="mapBuilderHexCountYLabel">
+          Hex Count Y
+        </label>
+        <br>
+        <input type="number" name="mapBuilderHexCountY" id="mapBuilderHexCountY" min="1" />
+
+        <br><br><hr>
+      </div>
+      <div id="mapBuilderToolbarFiltersForm">
+        <div>
+          <div>
+            <input id="mapBuilderToolbarFiltersFormHexGrid" type="checkbox" />
+          </div>
+          <div>
+            <img src="./assets/hex_grid.png" />
+            <div>Show Hex Grid</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="help">
+      <div>
+        <h2>How to use this tool:</h2>
+        There are 2 main steps:
+        <ol>
+          <li>
+            Create the .basis files for the map
+          </li>
+          <li>
+            Build the map data (POIs, map dimensions, etc)
+          </li>
+        </ol>
+        <br>
+      </div>
+      <div id="helpContainer">
+        <div id="helpContainerFileGeneration">
+          <div id="helpContainerFileGenerationHeader">
+            <div>
+              <img src="./assets/collapse.png" />
+            </div>
+            <div>
+              <h3>File Generation</h3>
+            </div>
+          </div>
+          <div id="helpContainerFileGenerationContent">
+            <ol>
+              <li>
+                Find a high quality image file for your map
+                <ul>
+                  <li>
+                    The image dimensions must be divisible by 8
+                  </li>
+                  <li>
+                    For context, the full-size dimensions for the default Melvor map is 10000x10000
+                  </li>
+                </ul>
+              </li>
+              <li>
+                Decide how many tiles (not hexes) your map should have
+                <ul>
+                  <li>
+                    Splitting the map into tiles helps Melvor render your map better
+                  </li>
+                  <li>
+                    Once you decided how many tiles you should have,
+                    find the dimensions of each tile by dividing your image dimensions by the number of tiles you have
+                  </li>
+                  <li>
+                    The tile dimensions must be multiples of 8
+                  </li>
+                  <li>
+                    The maximum tile dimensions are 2000x2000
+                  </li>
+                  <li>
+                    Input your tile width and height into their respective inputs
+                  </li>
+                </ul>
+              </li>
+              <li>
+                Decide how many threads the program will use
+                <ul>
+                  <li>
+                    The conversion from an image to a .basis file does take a while, so utilising more threads will speed it up
+                  </li>
+                  <li>
+                    You should not select more threads than your CPU has cores
+                  </li>
+                  <li>
+                    If you can't decide how many to use, just use something like 2 or 4 threads
+                  </li>
+                </ul>
+              </li>
+              <li>
+                Create the files
+                <ul>
+                  <li>
+                    Click the "Create Files" button
+                  </li>
+                  <li>
+                    This process can take a few minutes depending on
+                    your hardware, the size of the map, and the number of threads
+                  </li>
+                  <li>
+                    You can check in on the progress through the Log below the "Create Files" button
+                  </li>
+                </ul>
+              </li>
+              <li>
+                Download the files
+                <ul>
+                  <li>
+                    Once the Log prompts you to do so, click the "Download Files" button
+                  </li>
+                  <li>
+                    The files will be in a zip file
+                  </li>
+                  <li>
+                    The zip file will contain another 3 zip files inside,
+                    for the three different levels of detail Melvor lets you choose from.
+                  </li>
+                  <li>
+                    The low, medium and high detail maps use the 0.5x basis files, 1x basis files, and png files respectively
+                  </li>
+                  <li>
+                    In order for Melvor to use them, you must unzip all the files. Keep the files inside that main folder
+                  </li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+        </div>
+        <div id="helpContainerMapBuilder">
+          <div id="helpContainerMapBuilderHeader">
+            <div>
+              <img src="./assets/collapse.png" />
+            </div>
+            <div>
+              <h3>Map Building</h3>
+            </div>
+          </div>
+          <div id="helpContainerMapBuilderContent">
+            <ol>
+              <li>
+                Upload the map files
+                <ul>
+                  <li>
+                    <div style="display: inline-flex; align-items: center;">
+                      Click the
+                      <img src="./assets/settings.png" style="height: 1rem; aspect-ratio: 1; display: inline; margin: 0 3px;" />
+                      button and then click the "Choose Files" button
+                    </div>
+                  </li>
+                  <li>
+                    Upload all of your basis files of either resolution (0.5x or 1x)
+                  </li>
+                  <li>
+                    0.5x basis files will load a little faster but 1x basis files will
+                    have more detail when you zoom in further
+                  </li>
+                </ul>
+              </li>
+              <li>
+                Determine how many hexes there should be
+                <ul>
+                  <li>
+                    <div style="display: inline-flex; align-items: center;">
+                      Click the
+                      <img src="./favicon.ico" style="height: 1rem; aspect-ratio: 1; display: inline; margin: 0 3px;" />
+                      button and input the number of hexes you want, vertically and horizontally
+                    </div>
+                  </li>
+                  <li>
+                    Note that the number of hexes in each column alternate. If you selected 30 hexes vertically, 
+                    the first column will have 30 hexes, the second 29, the third, 30, and so on
+                  </li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="version">Version 0.1.1</div>
+</body>
+</html>
